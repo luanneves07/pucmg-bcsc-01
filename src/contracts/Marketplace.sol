@@ -91,7 +91,7 @@ event ProductUpdated (
     //Require that the product is for sale
     require(_product.forSale, "Product not for sale");
     //Require that the buyer is not the seller
-    require(msg.sender != _seller, "Buyer cannot be seller");
+    // require(msg.sender != _seller, "Buyer cannot be seller");
     //Transfer ownership to the buyer
     _product.owner = msg.sender;
     //Update the product
