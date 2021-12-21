@@ -2,6 +2,21 @@ import React, { Component } from 'react';
 
 class Main extends Component {
 
+  constructor(props) {
+    super(props);
+    this.state = {
+      values: []
+    }
+  }
+
+  componentWillMount() {
+    let x = []
+    this.props.products.forEach(p => {
+      x[p.id] = window.web3.utils.fromWei(p.price.toString(), "ether")
+    })
+    this.setState({values: x})
+  }
+
   render() {
     return (
       <div id="content">
@@ -45,29 +60,67 @@ class Main extends Component {
             </tr>
           </thead>
           <tbody id="productList">
-            {this.props.products.map((product, key) => {
-              return (
-                <tr key={key}>
-                  <th scope="row">{product.id.toString()}</th>
-                  <td>{product.name}</td>
-                  <td>{window.web3.utils.fromWei(product.price.toString(), "ether")} Eth</td>
-                  <td>{product.owner}</td>
-                  <td>
-                    {!product.purchased
-                      ? <button
-                        name={product.id}
-                        value={product.price}
-                        onClick={(event) => {
-                          this.props.purchaseProduct(event.target.name, event.target.value)
-                        }}
-                        >
-                          Comprar
-                        </button>
-                      : null
-                    }
-                  </td>
-                </tr>
-              )
+            {this.props.products
+              .filter(p => p.name !== "" && p.forSale || p.owner == this.props.account)
+              .map((product, key) => {
+              
+                return (
+                  <tr key={key}>
+                    <th scope="row">{product.id.toString()}</th>
+                    <td>{product.name}</td>
+                    <td>{window.web3.utils.fromWei(product.price.toString(), "ether")} Eth</td>
+                    <td>{product.owner}</td>
+                    <td>
+                      {!product.purchased
+                        ? <button
+                          name={product.id}
+                          value={product.price}
+                          onClick={(event) => {
+                            this.props.purchaseProduct(event.target.name, event.target.value)
+                          }}
+                          >
+                            Comprar
+                          </button>
+                        : null
+                      }
+                    </td>
+                    <td>{product.owner == this.props.account ? 
+                      <div>
+                        <input 
+                          value={this.state.values[product.id]}
+                          onChange={(e) => {
+                            const values = this.state.values;
+                            values[product.id] = e.target.value
+                            this.setState({values: values})
+                            this.value = e.target.value;
+                          }}
+                        ></input>
+                        <button
+                          onClick={(event) => {
+                            this.props.changePrice(product.id, this.state.values[product.id])
+                          }}
+                        >Alterar Preco</button>
+                      </div>: null}
+                    </td>
+                    <td>
+                      {
+                        product.owner == this.props.account ?
+                        product.forSale ?
+                        <button
+                          onClick={(event) => {
+                            this.props.changeForSale(product.id, false)
+                          }}
+                        >Remover da venda</button>:
+                        <button
+                          onClick={(event) => {
+                            this.props.changeForSale(product.id, true)
+                          }}
+                        >Colocar produto a venda</button>
+                        : null
+                      }
+                    </td>
+                  </tr>
+                )
             })}
           </tbody>
         </table>

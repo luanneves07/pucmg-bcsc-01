@@ -7,6 +7,20 @@ import Main from './Main'
 
 class App extends Component {
 
+  constructor(props) {
+    super(props)
+    this.state = {
+      account: '',
+      productCount: 0,
+      products: [],
+      loading: true
+    }
+
+    this.purchaseProduct = this.purchaseProduct.bind(this)
+    this.changePrice = this.changePrice.bind(this)
+    this.changeForSale = this.changeForSale.bind(this)
+  }
+
   async componentWillMount() {
     await this.loadWeb3()
     await this.loadBlockchainData()
@@ -52,24 +66,10 @@ class App extends Component {
     }
   }
 
-  constructor(props) {
-    super(props)
-    this.state = {
-      account: '',
-      productCount: 0,
-      products: [],
-      loading: true
-    }
-
-    // this.createProduct = this.createProduct.bind(this)
-    this.purchaseProduct = this.purchaseProduct.bind(this)
-  }
-
   createProduct = (name, price) => {
     this.setState({ loading: true })
     this.state.marketplace.methods.createProduct(name, price).send({ from: this.state.account })
       .on('confirmation', function (confirmationNumber, receipt) {
-        //this.setState({ loading: false })
         window.location.reload(false);
       })
   }
@@ -78,9 +78,24 @@ class App extends Component {
     this.setState({ loading: true })
     this.state.marketplace.methods.purchaseProduct(id).send({ from: this.state.account, value: price })
       .on('confirmation', function (confirmationNumber, receipt) {
-      //this.setState({ loading: false })
       window.location.reload(false);
     })
+  }
+
+  changePrice(id, price) {
+    this.setState({ loading: true})
+    this.state.marketplace.methods.changePrice(id, window.web3.utils.toWei(price, 'Ether')).send({ from: this.state.account })
+      .on('confirmation', function (confirmationNumber, receipt) {
+        window.location.reload(false);
+      })
+  }
+
+  changeForSale(id, forSale) {
+    this.setState({ loading: true})
+    this.state.marketplace.methods.changeForSalestate(id, forSale).send({ from: this.state.account })
+      .on('confirmation', function (confirmationNumber, receipt) {
+        window.location.reload(false);
+      })
   }
 
   render() {
@@ -93,9 +108,12 @@ class App extends Component {
               {this.state.loading
                 ? <div id="loader" className="text-center"><p className="text-center">Loading...</p></div>
                 : <Main
+                  account = {this.state.account}
                   products = {this.state.products}
                   createProduct = {this.createProduct}
-                  purchaseProduct = {this.purchaseProduct} />
+                  purchaseProduct = {this.purchaseProduct}
+                  changePrice = {this.changePrice}
+                  changeForSale = {this.changeForSale} />
               }
             </main>
           </div>
