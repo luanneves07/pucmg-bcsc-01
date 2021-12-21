@@ -73,6 +73,7 @@ class Main extends Component {
                     <td>
                       {!product.purchased
                         ? <button
+                          className="btn btn-outline-success"
                           name={product.id}
                           value={product.price}
                           onClick={(event) => {
@@ -96,6 +97,7 @@ class Main extends Component {
                           }}
                         ></input>
                         <button
+                          class="btn btn-outline-warning ml-1"
                           onClick={(event) => {
                             this.props.changePrice(product.id, this.state.values[product.id])
                           }}
@@ -107,11 +109,13 @@ class Main extends Component {
                         product.owner == this.props.account ?
                         product.forSale ?
                         <button
+                        className="btn btn-outline-primary"
                           onClick={(event) => {
                             this.props.changeForSale(product.id, false)
                           }}
                         >Remover da venda</button>:
                         <button
+                          className="btn btn-outline-danger"
                           onClick={(event) => {
                             this.props.changeForSale(product.id, true)
                           }}
